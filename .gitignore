@@ -1,0 +1,27 @@
+# --- Python (Cache y compilados) ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Django ---
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# --- Entornos Virtuales (Importante) ---
+venv/
+env/
+.venv/
+.env
+
+# --- IDEs y Editores (VS Code, Pycharm...) ---
+.vscode/
+.idea/
+*.swp
+
+# --- Sistema Operativo ---
+.DS_Store
+Thumbs.db
