@@ -1,74 +1,60 @@
 # MiniERP - Sistema de Gestión Empresarial
 
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+
 Este proyecto implementa la base de un sistema ERP sencillo utilizando Django, enfocado en la gestión de clientes, productos y pedidos de venta.
 
 ## 1. Justificación del Modelo de Datos
 
-El diseño se ha modularizado en dos aplicaciones para separar responsabilidades: **Core** (datos estáticos) y **Ventas** (datos dinámicos).
-
 ### 1.1. Clasificación de Entidades
-
-* **Entidades Maestras (`core`):**
-    * **Cliente:** Representa a los actores que realizan las compras. Es un dato maestro porque su existencia es independiente de las transacciones.
-    * **Producto:** Representa el catálogo de artículos disponibles. Es información estable que se referencia en múltiples ventas.
-
-* **Entidades Transaccionales (`ventas`):**
-    * **Pedido:** Representa el evento de venta ("Cabecera"). Depende del tiempo y de un cliente.
-    * **Línea de Pedido:** Representa el detalle desglosado de la venta. Su existencia depende totalmente del Pedido al que pertenece.
+* **Entidades Maestras (App `core`):**
+    * **Cliente:** Dato maestro independiente. Contiene la información fiscal y de contacto.
+    * **Producto:** Dato maestro estable. Representa el catálogo vendible.
+* **Entidades Transaccionales (App `ventas`):**
+    * **Pedido:** Cabecera de la venta. Depende del Cliente y del tiempo.
+    * **Línea de Pedido:** Detalle de la venta. Depende del Pedido (composición fuerte).
 
 ### 1.2. Relaciones y Cardinalidades
+* **Cliente - Pedido (1:N):** Un cliente tiene muchos pedidos. (On Delete: RESTRICT).
+* **Pedido - Línea (1:N):** Un pedido tiene muchas líneas. (On Delete: CASCADE).
+* **Producto - Línea (1:N):** Un producto aparece en muchas líneas. (On Delete: RESTRICT).
 
-Las relaciones se han implementado mediante claves foráneas (`ForeignKey`) siguiendo esta lógica:
+## 2. Estructura de Datos (Esquema ER)
 
-1.  **Cliente - Pedido (1:N):**
-    * *Relación:* Un Cliente puede realizar **N** Pedidos, pero un Pedido pertenece a **1** solo Cliente.
-    * *Integridad:* Se usa `ON_DELETE=RESTRICT`. No se permite eliminar un Cliente si tiene pedidos históricos, preservando la integridad contable.
+A continuación se detallan las tablas, sus campos principales y las claves (PK/FK).
 
-2.  **Pedido - LíneaPedido (1:N):**
-    * *Relación:* Un Pedido se compone de **N** Líneas de detalle. Una Línea pertenece a **1** único Pedido.
-    * *Integridad:* Se usa `ON_DELETE=CASCADE`. Es una relación de composición fuerte: si se borra la cabecera del pedido, sus líneas (detalles) dejan de tener sentido y se eliminan automáticamente.
+### Tabla: CLIENTE
+| Campo | Tipo | Notas |
+| :--- | :--- | :--- |
+| **id** | Integer | **PK** (Automática) |
+| nif | String | **Unique** (DNI/CIF) |
+| nombre | String | |
+| email | String | |
+| direccion | Text | |
 
-3.  **Producto - LíneaPedido (1:N):**
-    * *Relación:* Un Producto puede aparecer en **N** Líneas de diferentes pedidos.
-    * *Integridad:* Se usa `ON_DELETE=RESTRICT`. No se puede eliminar un Producto del catálogo si ya ha sido vendido (está presente en líneas de pedido).
+### Tabla: PRODUCTO
+| Campo | Tipo | Notas |
+| :--- | :--- | :--- |
+| **id** | Integer | **PK** (Automática) |
+| sku | String | **Unique** (Referencia) |
+| nombre | String | |
+| precio | Decimal | |
 
-## 2. Diagrama Entidad-Relación (ER)
+### Tabla: PEDIDO
+| Campo | Tipo | Notas |
+| :--- | :--- | :--- |
+| **id** | Integer | **PK** (Automática) |
+| fecha | DateTime | Auto-generada |
+| estado | String | Enum (Borrador, Confirmado...) |
+| **cliente_id** | Integer | **FK** -> Cliente |
 
-A continuación se representa la estructura de las tablas y sus relaciones:
-
-```mermaid
-erDiagram
-    CLIENTE ||--o{ PEDIDO : realiza
-    PEDIDO ||--|{ LINEA_PEDIDO : contiene
-    PRODUCTO ||--o{ LINEA_PEDIDO : referencia
-
-    CLIENTE {
-        int id PK
-        string nif UK "Unique"
-        string nombre
-        string email
-        text direccion
-    }
-
-    PRODUCTO {
-        int id PK
-        string sku UK "Unique"
-        string nombre
-        decimal precio
-    }
-
-    PEDIDO {
-        int id PK
-        date fecha
-        string estado "Enum: Borrador, Confirmado..."
-        int cliente_id FK
-    }
-
-    LINEA_PEDIDO {
-        int id PK
-        int cantidad "Check > 0"
-        decimal precio_unitario
-        int pedido_id FK
-        int producto_id FK
-    }
-    ```
+### Tabla: LINEA_PEDIDO
+| Campo | Tipo | Notas |
+| :--- | :--- | :--- |
+| **id** | Integer | **PK** (Automática) |
+| cantidad | Integer | Constraint: > 0 |
+| precio_unitario | Decimal | Precio congelado |
+| **pedido_id** | Integer | **FK** -> Pedido |
+| **producto_id** | Integer | **FK** -> Producto |
