@@ -1,5 +1,6 @@
 from django.db import models
 from core.models import Cliente, Producto
+from decimal import Decimal
 
 class EstadoPedido(models.Model):
     """Tabla maestra para los estados: BORRADOR, CONFIRMADO..."""
@@ -27,6 +28,17 @@ class Pedido(models.Model):
     def __str__(self):
         return f"Pedido {self.id} - {self.cliente.nombre}"
 
+    def calcular_totales(self):
+        """Calcula los totales del pedido basándose en sus líneas"""
+        base = sum(linea.precio_unitario * linea.cantidad for linea in self.lineas.all())
+        iva = base * Decimal('0.21')
+        total = base + iva
+        
+        self.total_bruto = base
+        self.total_iva = iva
+        self.total_neto = total
+        self.save()
+
 class LineaPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='lineas')
     producto = models.ForeignKey(Producto, on_delete=models.RESTRICT)
@@ -47,6 +59,8 @@ class LineaPedido(models.Model):
             self.precio_unitario = self.producto.precio_base
             self.tipo_iva = self.producto.tipo_iva
         super().save(*args, **kwargs)
+        # Después de guardar la línea, recalculamos los totales del pedido
+        self.pedido.calcular_totales()
 
     def __str__(self):
         return f"{self.cantidad} x {self.descripcion}"

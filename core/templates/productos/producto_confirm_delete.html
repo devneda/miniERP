@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Producto - MiniERP{% endblock %}
+
+{% block content %}
+    <h1>Eliminar Producto</h1>
+
+    <div style="border: 1px solid #dc3545; padding: 20px; border-radius: 8px; background-color: #fff5f5;">
+        <p>¿Estás seguro de que quieres eliminar el producto <strong>"{{ producto.nombre }}"</strong>?</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'producto_list' %}" class="btn btn-primary">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

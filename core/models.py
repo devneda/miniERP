@@ -22,6 +22,7 @@ class Producto(models.Model):
     descripcion = models.TextField(blank=True, null=True)    
     precio_base = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Base (Sin IVA)")
     tipo_iva = models.DecimalField(max_digits=4, decimal_places=2, verbose_name="IVA (ej: 0.21)") # 0.21 para 21%
+    stock = models.IntegerField(default=0, verbose_name="Stock")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

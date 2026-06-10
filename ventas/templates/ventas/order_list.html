@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Pedidos - MiniERP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-bar { margin-bottom: 20px; }
+    .search-bar input { padding: 8px 12px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
+    .search-bar button { padding: 8px 16px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .search-bar button:hover { background: #0056b3; }
+    .status { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
+    .status-borrador { background: #fff3cd; color: #856404; }
+    .status-confirmado { background: #d4edda; color: #155724; }
+    .pagination { margin-top: 20px; text-align: center; }
+    .pagination a, .pagination span { padding: 8px 12px; margin: 0 2px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; color: #007bff; }
+    .pagination span.current { background: #007bff; color: #fff; border-color: #007bff; }
+    .empty { text-align: center; padding: 40px; color: #888; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>Listado de Pedidos</h1>
+    
+    <div class="search-bar">
+        <form method="get">
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Buscar por cliente...">
+            <button type="submit">Buscar</button>
+            {% if request.GET.q %}
+                <a href="{% url 'pedido_list' %}" class="btn btn-danger" style="text-decoration: none;">Limpiar</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.cliente.nombre }}</td>
+                <td>
+                    <span class="status status-{{ order.estado.nombre|lower }}">
+                        {{ order.estado.nombre }}
+                    </span>
+                </td>
+                <td>{{ order.total_neto }} €</td>
+                <td>{{ order.fecha_pedido|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'pedido_delete' order.pk %}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Primera</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Anterior</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Siguiente</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&Uacute;ltima</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty">
+        <p>No se encontraron pedidos.</p>
+    </div>
+    {% endif %}
+{% endblock %}

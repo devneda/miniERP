@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Productos - MiniERP{% endblock %}
+
+{% block content %}
+    <h1>Gestión de Productos</h1>
+    
+    <a href="{% url 'producto_create' %}" class="btn btn-success" style="margin-bottom: 20px;">Crear Nuevo Producto</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Nombre</th>
+                <th>Precio Base</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.sku }}</td>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.precio_base }} €</td>
+                <td>{{ producto.stock }}</td>
+                <td>
+                    <a href="{% url 'producto_update' producto.pk %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'producto_delete' producto.pk %}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay productos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
