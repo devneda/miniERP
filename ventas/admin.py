@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pedido, LineaPedido, EstadoPedido
+from .models import Pedido, LineaPedido
 
 class LineaPedidoInline(admin.TabularInline):
     model = LineaPedido
@@ -13,6 +13,5 @@ class PedidoAdmin(admin.ModelAdmin):
     inlines = [LineaPedidoInline]
     readonly_fields = ('total_bruto', 'total_iva', 'total_neto') # Totales calculados, solo lectura
 
-admin.site.register(EstadoPedido)
 # Por simplicidad, registramos LineaPedido también
 admin.site.register(LineaPedido)
