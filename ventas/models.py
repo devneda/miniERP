@@ -22,6 +22,7 @@ class Pedido(models.Model):
     total_bruto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_neto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    stock_aplicado = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -50,7 +51,6 @@ class Pedido(models.Model):
             raise ValueError("Solo se pueden confirmar pedidos en estado borrador.")
         self.estado = self.Status.CONFIRMADO
         self.save()
-
 class LineaPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='lineas')
     producto = models.ForeignKey(Producto, on_delete=models.RESTRICT)

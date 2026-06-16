@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Oportunidades CRM{% endblock %}
+
+{% block content %}
+    <h1>Listado de Oportunidades (CRM)</h1>
+
+    <form method="get" style="margin-bottom: 20px;">
+        <select name="etapa">
+            <option value="">Todas las etapas</option>
+            {% for valor, etiqueta in view.model.Etapa.choices %}
+                <option value="{{ valor }}" {% if request.GET.etapa == valor %}selected{% endif %}>{{ etiqueta }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Cliente</th>
+                <th>Valor Estimado</th>
+                <th>Etapa</th>
+                <th>Fecha Creación</th>
+                <th>Fecha Cierre</th>
+                <th>Días Abierta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opp in oportunidades %}
+            <tr>
+                <td>{{ opp.titulo }}</td>
+                <td>{{ opp.cliente.nombre }}</td>
+                <td>{{ opp.valor_estimado }} €</td>
+                <td>{{ opp.get_etapa_display }}</td>
+                <td>{{ opp.fecha_creacion|date:"d/m/Y" }}</td>
+                <td>{{ opp.fecha_cierre|date:"d/m/Y" }} {% if opp.hora_cierre %}{{ opp.hora_cierre|time:"H:i" }}{% endif %}</td>
+                <td>{{ opp.dias_abierta }}</td>
+            </tr>
+            {% empty %}
+
+            <tr>
+                <td colspan="5">No hay oportunidades registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

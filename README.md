@@ -70,3 +70,17 @@ Para garantizar la robustez del sistema, se han implementado patrones de diseño
 | tipo_iva | Decimal | **Snapshot** (Copia del producto) |
 | **pedido_id** | Integer | **FK** -> Pedido (OnDelete: Cascade) |
 | **producto_id** | Integer | **FK** -> Producto |
+
+## 4. Inteligencia de Negocio y CRM
+
+### 4.1. KPI: Tasa de Conversión (Conversion Rate)
+La Tasa de Conversión es un indicador clave que mide la efectividad del equipo de ventas al transformar oportunidades en ventas reales (ganadas).
+
+**Definición:** Porcentaje de oportunidades cerradas con éxito sobre el total de oportunidades cerradas.
+
+**Cálculo con el Modelo CRM:**
+Para calcular este KPI utilizando nuestro modelo `Oportunidad`, aplicaríamos la siguiente fórmula:
+
+$$Tasa\ de\ Conversión = \left( \frac{Oportunidades\ con\ etapa\ 'Cerrada\ Ganada'}{Total\ de\ Oportunidades\ (Ganadas + Perdidas)} \right) \times 100$$
+
+Este indicador permite evaluar la salud del embudo de ventas y la calidad de los prospectos gestionados en el sistema.

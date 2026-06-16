@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'ventas'
+    'ventas.apps.VentasConfig',
+    'crm',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

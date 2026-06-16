@@ -2,6 +2,9 @@ from django.views.generic import ListView, DeleteView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import Pedido
+from core.models import Producto
+from .serializers import ProductoSerializer
+from rest_framework import generics, permissions
 
 class PedidoListView(ListView):
     model = Pedido
@@ -26,3 +29,9 @@ class PedidoDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "El pedido ha sido eliminado correctamente.")
         return super().delete(request, *args, **kwargs)
+
+class ProductoListAPIView(generics.ListAPIView):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+

@@ -25,7 +25,6 @@ class ClienteForm(forms.ModelForm):
 
     def clean_nif(self):
         nif = self.cleaned_data.get('nif')
-        # Aunque el modelo ya tiene unique=True, el PDF pide validarlo en el formulario
         if Cliente.objects.filter(nif=nif).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("El CIF/NIF ya existe en el sistema.")
         return nif

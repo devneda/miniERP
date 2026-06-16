@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard CRM - MiniERP{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+    .stat-card { 
+        background: white; 
+        padding: 20px; 
+        border-radius: 8px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        flex: 1; 
+        min-width: 200px;
+        text-align: center;
+    }
+    .stat-card h3 { margin: 0; color: #666; font-size: 1em; }
+    .stat-card p { font-size: 2em; font-weight: bold; margin: 10px 0; color: #007bff; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1>Dashboard de Inteligencia CRM</h1>
+
+    <div class="dashboard-container">
+        <div class="stat-card">
+            <h3>Total Oportunidades</h3>
+            <p>{{ total_opps }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Ganadas</h3>
+            <p>{{ ganadas }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Valor Estimado Total</h3>
+            <p>{{ valor_total }} €</p>
+        </div>
+        <div class="stat-card" style="border: 2px solid #28a745;">
+            <h3>Tasa de Conversión (KPI)</h3>
+            <p>{{ tasa_conversion }}%</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'oportunidad_list' %}" class="btn btn-primary">Ver Listado Detallado</a>
+    </div>
+{% endblock %}
