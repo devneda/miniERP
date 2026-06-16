@@ -30,8 +30,4 @@ class PedidoDeleteView(DeleteView):
         messages.success(self.request, "El pedido ha sido eliminado correctamente.")
         return super().delete(request, *args, **kwargs)
 
-class ProductoListAPIView(generics.ListAPIView):
-    queryset = Producto.objects.all()
-    serializer_class = ProductoSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
