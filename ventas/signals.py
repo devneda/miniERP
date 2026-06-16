@@ -15,13 +15,14 @@ def reducir_stock_al_confirmar(sender, instance, created, **kwargs):
     """Resta stock de los productos cuando un pedido pasa a CONFIRMADO"""
     if instance.estado == Pedido.Status.CONFIRMADO and not instance.stock_aplicado:
         for linea in instance.lineas.all():
-            producto = linea.producto
-            if producto.stock >= linea.cantidad:
-                producto.stock -= int(linea.cantidad)
-                producto.save()
-            else:
-                error_msg = f"Stock insuficiente para {producto.nombre}. Requerido: {linea.cantidad}, Disponible: {producto.stock}"
+            if linea.producto.stock < linea.cantidad:
+                error_msg = f"Stock insuficiente para {linea.producto.nombre}. Requerido: {linea.cantidad}, Disponible: {linea.producto.stock}"
                 logger.error(error_msg)
+                raise ValueError(error_msg)
+
+        for linea in instance.lineas.all():
+            producto = linea.producto
+            producto.stock -= int(linea.cantidad)
+            producto.save()
         
-        instance.stock_aplicado = True
         Pedido.objects.filter(pk=instance.pk).update(stock_aplicado=True)
